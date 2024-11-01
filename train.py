@@ -1,18 +1,40 @@
-from PIL import Image
+import os
 import numpy as np
+import pandas as pd
+from PIL import Image
 
-# Load the image
-image_path = 'path/to/your/image.png'  # Update with your image path
-image = Image.open(image_path)
 
-# Convert the image to black and white (1-bit pixels)
-bw_image = image.convert('1')  # '1' mode is for 1-bit pixels, black and white
+def pngs_to_csv(folder_path, output_csv, resize_dim=(32, 32)):
+    """
+    Convert all PNG images in a folder to a CSV where each row represents an image's pixel values.
+    Images are first scaled to a specified resolution.
 
-# Convert the image to a NumPy array
-binary_array = np.array(bw_image)
+    :param folder_path: Path to the folder containing PNG images.
+    :param output_csv: Name of the output CSV file.
+    :param resize_dim: Tuple specifying the (width, height) for resizing each image.
+    """
+    # Initialize an empty list to hold all flattened images
+    data = []
 
-# Convert the boolean array (True for white, False for black) to binary (1s and 0s)
-binary_array = binary_array.astype(int)
+    # Iterate through each PNG file in the folder
+    for filename in os.listdir(folder_path):
+        if filename.endswith('.png'):
+            # Open the image, convert to grayscale, resize, and flatten
+            img = Image.open(os.path.join(folder_path, filename)).convert('L')
+            img = img.resize(resize_dim)  # Resize to specified dimensions
 
-# Display the binary array
-print(binary_array)
+            # Flatten the resized image to a 1D array of pixel values
+            img_array = np.array(img).flatten()
+
+            # Append the flattened image to the data list
+            data.append(img_array)
+
+    # Convert the list to a DataFrame, each row is an image
+    df = pd.DataFrame(data)
+
+    # Save the DataFrame to a CSV file
+    df.to_csv(output_csv, index=False)
+
+
+# Usage
+pngs_to_csv('/Users/natha/PycharmProjects/Characters/characters/Img', 'output.csv', resize_dim=(32, 32))
