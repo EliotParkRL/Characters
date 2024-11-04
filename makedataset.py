@@ -2,6 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 from PIL import Image
+from natsort import natsorted
 
 
 def pngs_to_csv(folder_path, output_csv, resize_dim=(32, 32)):
@@ -17,7 +18,7 @@ def pngs_to_csv(folder_path, output_csv, resize_dim=(32, 32)):
     data = []
 
     # Iterate through each PNG file in the folder
-    for filename in os.listdir(folder_path):
+    for filename in natsorted(os.listdir(folder_path)):
         if filename.endswith('.png'):
             # Open the image, convert to grayscale, resize, and flatten
             img = Image.open(os.path.join(folder_path, filename)).convert('L')
@@ -37,4 +38,4 @@ def pngs_to_csv(folder_path, output_csv, resize_dim=(32, 32)):
 
 
 # Usage
-pngs_to_csv('/Users/natha/PycharmProjects/Characters/characters/Img', 'output2.csv', resize_dim=(64, 64))
+pngs_to_csv('/Users/natha/Documents/GitHub/Characters/characters/Img', 'output2.csv', resize_dim=(64, 64))
