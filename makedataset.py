@@ -38,4 +38,4 @@ def pngs_to_csv(folder_path, output_csv, resize_dim=(32, 32)):
 
 
 # Usage
-pngs_to_csv('/Users/natha/Documents/GitHub/Characters/characters/Img', 'output2.csv', resize_dim=(64, 64))
+pngs_to_csv('/Users/natha/Documents/GitHub/Characters/characters/Img', 'output.csv', resize_dim=(64, 64))
