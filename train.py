@@ -6,12 +6,11 @@ from sklearn.preprocessing import StandardScaler, PolynomialFeatures
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 import tensorflow as tf
-from tensorflow.python import keras
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.activations import relu,linear
-from tensorflow.keras.losses import SparseCategoricalCrossentropy
-from tensorflow.keras.optimizers import Adam
+from tensorflow.python.keras.models import Sequential
+from tensorflow.python.keras.layers import Dense
+from tensorflow.python.keras.activations import relu,linear
+from tensorflow.python.keras.losses import SparseCategoricalCrossentropy
+# from tensorflow.python.keras.optimizers import Adam
 
 import logging
 logging.getLogger("tensorflow").setLevel(logging.ERROR)
