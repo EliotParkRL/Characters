@@ -485,6 +485,22 @@ model.compile(
     loss=SparseCategoricalCrossentropy(from_logits=True),
     ### END CODE HERE ###
 )
+def eval_cat_err(y, yhat):
+    """
+    Calculate the categorization error
+    Args:
+      y    : (ndarray  Shape (m,) or (m,1))  target value of each example
+      yhat : (ndarray  Shape (m,) or (m,1))  predicted value of each example
+    Returns:|
+      err: (scalar)
+    """
+    m = len(y)
+    incorrect = 0
+    for i in range(m):
+        if yhat[i] != y[i]:
+            incorrect += 1
+    err = incorrect/m
+    return(err)
 
 classes = y.unique
 
