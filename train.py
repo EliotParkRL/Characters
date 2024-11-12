@@ -486,10 +486,11 @@ model.compile(
     ### END CODE HERE ###
 )
 
-
+classes = y.unique
 
 model_predict = lambda Xl: np.argmax(tf.nn.softmax(model.predict(Xl)).numpy(),axis=1)
-plt_nn(model_predict,X_train,y_train, classes, X_cv, y_cv, suptitle="Complex Model")
 
 training_cerr_complex = eval_cat_err(y_train, model_predict(X_train))
 cv_cerr_complex = eval_cat_err(y_cv, model_predict(X_cv))
+print(f"categorization error, training, complex model: {training_cerr_complex:0.3f}")
+print(f"categorization error, cv,       complex model: {cv_cerr_complex:0.3f}")
