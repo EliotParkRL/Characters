@@ -6,17 +6,21 @@ from sklearn.preprocessing import StandardScaler, PolynomialFeatures
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 import tensorflow as tf
-from tensorflow.python.keras.models import Sequential
-from tensorflow.python.keras.layers import Dense
-from tensorflow.python.keras.activations import relu,linear
-from tensorflow.python.keras.losses import SparseCategoricalCrossentropy
-# from tensorflow.python.keras.optimizers import Adam
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.activations import relu,linear
+from tensorflow.keras.losses import SparseCategoricalCrossentropy
+from tensorflow.keras.optimizers import Adam
 
 import logging
 logging.getLogger("tensorflow").setLevel(logging.ERROR)
 
 X = np.array(pd.read_csv("output.csv"))
-y= np.array(pd.read_csv("processed_labels.csv").iloc[:,1])
+y= pd.read_csv("processed_labels.csv").iloc[:,1]
+y = pd.factorize(y)[0]
+y = np.array(y)
+
+
 X_train, X_, y_train, y_ = train_test_split(X,y,test_size=0.50, random_state=1)
 X_cv, X_test, y_cv, y_test = train_test_split(X_,y_,test_size=0.20, random_state=1)
 
@@ -26,9 +30,9 @@ model = Sequential(
     [
         ### START CODE HERE ###
         Dense(4096, activation="relu"),
-        Dense(120, activation="relu"),
-        Dense(40, activation="relu"),
-        Dense(6, activation="linear")
+        Dense(1024, activation="relu"),
+        Dense(512, activation="relu"),
+        Dense(61, activation="linear")
 
         ### END CODE HERE ###
 
@@ -37,6 +41,7 @@ model = Sequential(
 model.compile(
     ### START CODE HERE ###
     loss=SparseCategoricalCrossentropy(from_logits=True),
+    optimizer=Adam(learning_rate=0.01),
     ### END CODE HERE ###
 )
 def eval_cat_err(y, yhat):
@@ -56,7 +61,10 @@ def eval_cat_err(y, yhat):
     err = incorrect/m
     return(err)
 
-classes = y.unique()
+model.fit(
+    X_train, y_train,
+    epochs=1000
+)
 
 model_predict = lambda Xl: np.argmax(tf.nn.softmax(model.predict(Xl)).numpy(),axis=1)
 
