@@ -32,7 +32,7 @@ model = Sequential(
         Dense(4096, activation="relu"),
         Dense(1024, activation="relu"),
         Dense(512, activation="relu"),
-        Dense(61, activation="linear")
+        Dense(62, activation="linear")
 
         ### END CODE HERE ###
 
@@ -63,7 +63,7 @@ def eval_cat_err(y, yhat):
 
 model.fit(
     X_train, y_train,
-    epochs=1000
+    epochs=10
 )
 
 model_predict = lambda Xl: np.argmax(tf.nn.softmax(model.predict(Xl)).numpy(),axis=1)
