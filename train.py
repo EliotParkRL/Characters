@@ -20,6 +20,8 @@ y= pd.read_csv("processed_labels.csv").iloc[:,1]
 y = pd.factorize(y)[0]
 y = np.array(y)
 
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
 
 X_train, X_, y_train, y_ = train_test_split(X,y,test_size=0.50, random_state=1)
 X_cv, X_test, y_cv, y_test = train_test_split(X_,y_,test_size=0.20, random_state=1)
@@ -28,21 +30,15 @@ X_cv, X_test, y_cv, y_test = train_test_split(X_,y_,test_size=0.20, random_state
 tf.random.set_seed(1234)
 model = Sequential(
     [
-        ### START CODE HERE ###
-        Dense(4096, activation="relu"),
         Dense(1024, activation="relu"),
         Dense(512, activation="relu"),
-        Dense(62, activation="linear")
-
-        ### END CODE HERE ###
+        Dense(62, activation="softmax")
 
     ], name="Complex"
 )
 model.compile(
-    ### START CODE HERE ###
-    loss=SparseCategoricalCrossentropy(from_logits=True),
-    optimizer=Adam(learning_rate=0.01),
-    ### END CODE HERE ###
+    loss=SparseCategoricalCrossentropy(from_logits=False),
+    optimizer=Adam(learning_rate=0.001),
 )
 def eval_cat_err(y, yhat):
     """
