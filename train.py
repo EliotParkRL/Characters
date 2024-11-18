@@ -11,6 +11,11 @@ from tensorflow.keras.layers import Dense
 from tensorflow.keras.activations import relu,linear
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.layers import Dropout
+from tensorflow.keras.regularizers import l2
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
 
 import logging
 logging.getLogger("tensorflow").setLevel(logging.ERROR)
@@ -26,19 +31,17 @@ X = scaler.fit_transform(X)
 X_train, X_, y_train, y_ = train_test_split(X,y,test_size=0.50, random_state=1)
 X_cv, X_test, y_cv, y_test = train_test_split(X_,y_,test_size=0.20, random_state=1)
 
-
 tf.random.set_seed(1234)
 model = Sequential(
     [
-        Dense(1024, activation="relu"),
-        Dense(512, activation="relu"),
-        Dense(62, activation="softmax")
+        Dense(256, activation="relu", kernel_regularizer=tf.keras.regularizers.l2(0.01)),
+        Dense(62, activation="softmax", kernel_regularizer=tf.keras.regularizers.l2(0.01))
 
     ], name="Complex"
 )
 model.compile(
     loss=SparseCategoricalCrossentropy(from_logits=False),
-    optimizer=Adam(learning_rate=0.001),
+    optimizer=Adam(learning_rate=0.0001),
 )
 def eval_cat_err(y, yhat):
     """
@@ -57,9 +60,14 @@ def eval_cat_err(y, yhat):
     err = incorrect/m
     return(err)
 
+early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+
 model.fit(
     X_train, y_train,
-    epochs=10
+    epochs=100,
+    validation_data=(X_cv, y_cv),
+    callbacks=[early_stopping],
+    shuffle=True
 )
 
 model_predict = lambda Xl: np.argmax(tf.nn.softmax(model.predict(Xl)).numpy(),axis=1)
