@@ -1,43 +1,40 @@
-from PIL import Image
 import os
 import numpy as np
-import csv
+import pandas as pd
+from PIL import Image
 
-# Directory containing the grayscale PNG images
-directory_path = "/Users/eliotpark/Downloads/characters/Img"
 
-# Threshold value for binary conversion
-threshold_value = 128
+def pngs_to_csv(folder_path, output_csv, resize_dim=(256, 256)):
+    """
+    Convert all PNG images in a folder to a CSV where each row represents an image's pixel values.
+    Images are first scaled to a specified resolution.
 
-# Output CSV file path
-output_csv_path = "binary_vectors.csv"
+    :param folder_path: Path to the folder containing PNG images.
+    :param output_csv: Name of the output CSV file.
+    :param resize_dim: Tuple specifying the (width, height) for resizing each image.
+    """
+    # Initialize an empty list to hold all flattened images
+    data = []
 
-# Prepare data for CSV writing
-csv_data = []
+    # Iterate through each PNG file in the folder
+    for filename in os.listdir(folder_path):
+        if filename.endswith('.png'):
+            # Open the image, convert to grayscale, resize, and flatten
+            img = Image.open(os.path.join(folder_path, filename)).convert('L')
+            img = img.resize(resize_dim)  # Resize to specified dimensions
 
-# Iterate over each file in the directory
-for filename in os.listdir(directory_path):
-    if filename.endswith(".png"):
-        # Load the image, convert to grayscale, and resize to 32x32 pixels
-        image_path = os.path.join(directory_path, filename)
-        image = Image.open(image_path).convert("L").resize((32, 32))  # Convert to grayscale and resize to 32x32
-        
-        # Convert image to numpy array
-        image_array = np.array(image)
-        
-        # Apply thresholding to convert to binary (0s and 1s)
-        binary_image = (image_array >= threshold_value).astype(int)
-        
-        # Flatten the binary image to a 1D vector
-        binary_vector = binary_image.flatten()
-        
-        # Append filename and vector as a row in the CSV data
-        csv_data.append([filename] + binary_vector.tolist())
-        print(filename)
+            # Flatten the resized image to a 1D array of pixel values
+            img_array = np.array(img).flatten()
 
-# Write the data to a CSV file
-with open(output_csv_path, mode="w", newline="") as csv_file:
-    writer = csv.writer(csv_file)
-    writer.writerows(csv_data)
+            # Append the flattened image to the data list
+            data.append(img_array)
 
-print(f"Binary vectors have been saved to {output_csv_path}")
+    # Convert the list to a DataFrame, each row is an image
+    df = pd.DataFrame(data)
+
+    # Save the DataFrame to a CSV file
+    df.to_csv(output_csv, index=False)
+
+
+# Usage
+pngs_to_csv('path/to/png/folder', 'output2.csv', resize_dim=(256, 256))
